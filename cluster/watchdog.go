@@ -146,19 +146,9 @@ func (w *Watchdog) rescheduleContainers(e *Engine) {
 		// see https://github.com/docker/docker/issues/17750
 		// Add the global networks one by one
 		for networkName, endpoint := range globalNetworks {
-			hasSubnet := false
-			network := w.cluster.Networks().Uniq().Get(networkName)
-			if network != nil {
-				for _, config := range network.IPAM.Config {
-					if config.Subnet != "" {
-						hasSubnet = true
-						break
-					}
-				}
-			}
 			// If this network did not have a defined subnet, we
 			// cannot connect to it with an explicit IP address.
-			if !hasSubnet && endpoint.IPAMConfig != nil {
+			if endpoint.IPAMConfig != nil {
 				endpoint.IPAMConfig.IPv4Address = ""
 				endpoint.IPAMConfig.IPv6Address = ""
 			}
